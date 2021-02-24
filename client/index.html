@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Winamax</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="index.css">
+  </head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+  <script>
+    window.onload = function() {
+      /* Initialize socket connection */
+      const socket = io.connect('http://localhost:1111', { 
+        reconnection: true,
+        reconnectionDelay: 1000,
+        reconnectionDelayMax: 5000,
+        randomizationFactor: 0.5,
+        path: "/betEvents"
+      });
+
+      /* Submit bets on button click */
+      const sendBets = document.getElementById("sendBets");
+      const betsNumber = document.getElementById("betsNumber");
+      let mid = 0;
+      let nbProcessedBet;
+      let startDate, endDate;
+      sendBets.addEventListener("click", () => {
+        nbProcessedBet = 0;
+        document.getElementById("displayBetsNumber").innerHTML = `${betsNumber.value || "A"}`;
+
+        const count = parseInt(betsNumber.value);
+        if (!count) return;
+
+        mid++;
+        const ioBody = { command: "enqueue", count, mid };
+        socket.emit("SubmitBets", ioBody);
+        startDate = new Date().getTime();
+      });
+
+      /* Handle bet processed */
+      socket.on("BetProcessed", (data) => {
+        nbProcessedBet++;
+        if (nbProcessedBet == betsNumber.value) {
+          endDate = new Date().getTime();
+          document.getElementById("timeToProcess").innerHTML = `${(endDate - startDate)/1000} s`;
+        }
+        document.getElementById("displayNbProcessedBet").innerHTML = `${nbProcessedBet}`;
+      });
+    }
+  </script>
+
+  <body>
+    <h1>Test technique Winamax</h1>
+    <input type="number" id="betsNumber" input="Enter the number of bet to send">
+    <input type="submit" id="sendBets" value="Send bets">
+    <div style="margin-top: 15px">Number of elements - <span id="displayNbProcessedBet">N</span>/<span id="displayBetsNumber">A</span></div>
+    <div style="margin-top: 15px">Time to process - <span id="timeToProcess">N/A</span></div>
+  </body>
+</html> 

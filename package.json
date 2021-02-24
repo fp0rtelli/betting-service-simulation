@@ -1,0 +1,22 @@
+{
+  "name": "test_winamax",
+  "version": "1.0.0",
+  "author": "Florian Portelli",
+  "scripts": {
+    "start-api": "node api/server.js",
+    "start-client": "parcel serve client/index.html -p 3000",
+    "start-worker": "node worker/worker.js --instances 10",
+    "stress-test": "node stress_test/test.js --messages 2 --sockets 2 --count 100"
+  },
+  "dependencies": {
+    "cors": "2.8.5",
+    "express": "4.17.1",
+    "node-fetch": "2.6.1",
+    "parcel": "1.12.4",
+    "redis": "3.0.2",
+    "socket.io": "2.3.0",
+    "socket.io-client": "2.3.0",
+    "yargs": "16.1.0"
+  },
+  "devDependencies": {}
+}
